@@ -1,9 +1,29 @@
+use crate::error::Result;
 use crossterm::event::{self, Event, KeyCode};
+use ratatui::{prelude::*, widgets::*};
 use std::time::Duration;
 
-use crate::error::Result;
-use crate::messages::Message;
-use crate::model::{Model, RunningState};
+#[derive(PartialEq)]
+pub enum Message {
+    Increment,
+    Decrement,
+    Reset,
+    Quit,
+}
+
+#[derive(Debug, Default, PartialEq, Eq)]
+pub enum RunningState {
+    #[default]
+    Running,
+    Done,
+}
+
+#[derive(Debug, Default)]
+pub struct Model {
+    pub counter: i32,
+    pub running_state: RunningState,
+    pub tab: usize,
+}
 
 /// Convert Event to Message
 /// We don't need to pass in a `model` to this function in this example
@@ -49,4 +69,11 @@ pub fn update(model: &mut Model, msg: Message) -> Option<Message> {
         }
     };
     None
+}
+
+pub fn view(model: &mut Model, f: &mut Frame) {
+    f.render_widget(
+        Paragraph::new(format!("Counter: {}", model.counter)),
+        f.size(),
+    );
 }
